@@ -1,6 +1,3 @@
-# ============================================
-# EXSALA HERMES MOD · powered by Gienetic
-# ============================================
 from contextlib import asynccontextmanager
 from pathlib import Path
 import gc
