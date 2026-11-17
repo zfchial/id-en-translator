@@ -1,4 +1,3 @@
-# EXSALA HERMES MOD · powered by Gienetic
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
