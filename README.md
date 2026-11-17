@@ -1,7 +1,5 @@
 # Alih — Terjemah Indonesia ke Inggris
 
-EXSALA HERMES MOD · powered by Gienetic
-
 Web penerjemah lokal menggunakan Helsinki-NLP `opus-mt-id-en`, dikonversi ke CTranslate2 INT8 untuk mengendalikan penggunaan memori dan CPU. Model dimuat saat permintaan terjemahan pertama lalu dilepas setelah 120 detik tanpa aktivitas; saat idle, proses web tidak menjalankan inferensi. Teks diproses pada server ini, bukan layanan inference pihak ketiga.
 
 ## Jalankan
