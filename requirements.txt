@@ -1,0 +1,9 @@
+# ============================================
+# EXSALA HERMES MOD · powered by Gienetic
+# ============================================
+ctranslate2==4.8.3
+transformers==4.57.1
+sentencepiece==0.2.1
+sacremoses==0.1.1
+fastapi==0.133.1
+uvicorn==0.54.0

@@ -1,0 +1,9 @@
+# EXSALA HERMES MOD · powered by Gienetic
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+models/
+*.log
