@@ -1,6 +1,6 @@
-# Alih — Terjemah Indonesia ke Inggris
+# Alih — Terjemah Indonesia ⇄ Inggris
 
-Web penerjemah lokal menggunakan Helsinki-NLP `opus-mt-id-en`, dikonversi ke CTranslate2 INT8 untuk mengendalikan penggunaan memori dan CPU. Model dimuat saat permintaan terjemahan pertama lalu dilepas setelah 120 detik tanpa aktivitas; saat idle, proses web tidak menjalankan inferensi. Teks diproses pada server ini, bukan layanan inference pihak ketiga.
+Web penerjemah lokal dua arah menggunakan Helsinki-NLP `opus-mt-id-en` dan `opus-mt-en-id`, keduanya dikonversi ke CTranslate2 INT8 untuk mengendalikan penggunaan memori dan CPU. Model dimuat saat permintaan terjemahan pertama lalu dilepas setelah 120 detik tanpa aktivitas; saat idle, proses web tidak menjalankan inferensi. Teks diproses pada server ini, bukan layanan inference pihak ketiga.
 
 ## Jalankan
 
@@ -10,8 +10,32 @@ Web penerjemah lokal menggunakan Helsinki-NLP `opus-mt-id-en`, dikonversi ke CTr
 
 Buka `http://<IP-server>:8789`. Status model: `http://<IP-server>:8789/api/health`.
 
-Dependensi Python tercatat di `requirements.txt`; model terkonversi disimpan di `models/opus-mt-id-en-ct2/`. Model dan tokenizer harus sudah tersedia lokal agar aplikasi dapat dimulai dan melayani terjemahan.
+## Arah terjemahan
 
-Batas input per permintaan: 5.000 karakter. Backend dijalankan satu worker; inferensi menggunakan maksimal dua thread CPU secara default, diatur lewat `CPU_THREADS`. Jeda idle bawaan 120 detik; dapat diubah lewat `IDLE_UNLOAD_SECONDS` (minimum 30 detik). Ketika request berlangsung, model memakai thread CPU yang dikonfigurasi; saat tidak ada request CPU untuk inferensi nol. Mengosongkan model dapat mengembalikan RAM ke sistem, namun halaman berstatus tidur hingga permintaan berikutnya memuat model lagi.
+UI punya tiga mode: `Auto`, `ID→EN`, `EN→ID`, plus tombol tukar arah.
 
-Model: [Helsinki-NLP/opus-mt-id-en](https://huggingface.co/Helsinki-NLP/opus-mt-id-en) · lisensi Apache-2.0.
+API menerima field `direction`:
+
+```bash
+curl -X POST http://127.0.0.1:8789/api/translate \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"Selamat pagi semua","direction":"id-en"}'
+```
+
+Nilai yang diterima: `id-en`, `en-id`, atau `auto` (default). Mode `auto` mendeteksi bahasa sumber dari kata fungsi yang khas; bila ambigu, jatuh ke `id-en`. Respons menyertakan `direction` dan `model` yang benar-benar dipakai.
+
+## Konfigurasi
+
+| Env | Default | Fungsi |
+| --- | --- | --- |
+| `MODEL_DIR_ID_EN` | `models/opus-mt-id-en-ct2` | Lokasi model ID→EN |
+| `MODEL_DIR_EN_ID` | `models/opus-mt-en-id-ct2` | Lokasi model EN→ID |
+| `CPU_THREADS` | `2` | Thread CPU per inferensi |
+| `IDLE_UNLOAD_SECONDS` | `120` | Jeda sebelum model dilepas (min 30) |
+| `HOST` / `PORT` | `0.0.0.0` / `8789` | Bind address |
+
+Dependensi Python tercatat di `requirements.txt`; model terkonversi disimpan di `models/`. Model dan tokenizer harus sudah tersedia lokal agar aplikasi dapat dimulai dan melayani terjemahan.
+
+Batas input per permintaan: 5.000 karakter. Backend dijalankan satu worker; inferensi menggunakan maksimal dua thread CPU secara default, diatur lewat `CPU_THREADS`. Ketika request berlangsung, model memakai thread CPU yang dikonfigurasi; saat tidak ada request CPU untuk inferensi nol. Mengosongkan model dapat mengembalikan RAM ke sistem, namun halaman berstatus tidur hingga permintaan berikutnya memuat model lagi. Saat kedua arah aktif bersamaan, RSS proses sekitar 640 MB; turun kembali setelah idle unload.
+
+Model: [Helsinki-NLP/opus-mt-id-en](https://huggingface.co/Helsinki-NLP/opus-mt-id-en) · [Helsinki-NLP/opus-mt-en-id](https://huggingface.co/Helsinki-NLP/opus-mt-en-id) · lisensi Apache-2.0.
