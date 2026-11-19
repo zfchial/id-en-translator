@@ -1,0 +1,15 @@
+[Unit]
+Description=Alih — penerjemah lokal ID ⇄ EN (opus-mt CT2 INT8)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/DATA/Documents/coding/id-en-translator
+ExecStart=/DATA/Documents/coding/id-en-translator/start.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

@@ -10,6 +10,28 @@ Web penerjemah lokal dua arah menggunakan Helsinki-NLP `opus-mt-id-en` dan `opus
 
 Buka `http://<IP-server>:8789`. Status model: `http://<IP-server>:8789/api/health`.
 
+## Bangun ulang model
+
+Model tidak ikut repo (folder `models/` di-.gitignore). Untuk membuat ulang dari nol:
+
+```bash
+./scripts/build_model.sh
+```
+
+Skrip mengunduh kedua repo Helsinki-NLP dari Hugging Face, mengonversi ke CTranslate2 INT8, menyalin tokenizer, lalu menyimpannya di `models/opus-mt-id-en-ct2/` dan `models/opus-mt-en-id-ct2/` (masing-masing ±75 MB). Butuh koneksi internet dan ruang disk ±800 MB selama proses.
+
+## Autostart
+
+Unit systemd user tersedia di `deploy/id-en-translator.service`:
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp deploy/id-en-translator.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now id-en-translator
+loginctl enable-linger "$USER"
+```
+
 ## Arah terjemahan
 
 UI punya tiga mode: `Auto`, `ID→EN`, `EN→ID`, plus tombol tukar arah.
